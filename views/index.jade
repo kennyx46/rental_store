@@ -1,6 +1,9 @@
 extends layout
 
 block content
+  div(ng-app='rentalStore')
+    div(ng-controller="MainCtrl as main")
+      p(ng-bind="main.user")
   h1= bla
   hr
   p Welcome to #{bla}
