@@ -1,0 +1,6 @@
+1. secure user for db (no root!)
+2. nodemon??? global modules on vps???
+3. do we need sequilize sync???
+4. lazy loading films???
+5. query not all attributes???
+6. lazy or not lazy pagination???
