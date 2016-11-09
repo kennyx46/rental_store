@@ -4,3 +4,21 @@
 4. lazy loading films???
 5. query not all attributes???
 6. lazy or not lazy pagination???
+
+
+
+
+films with title like ace - 15 selects and 15 total (no offset, no limit, no joins) !correct
+films with title like ace - 15 selects but total count is 74 ((( (no offset, no limit, joins without require)
+
+films with title like ace - 15 and total count is 15 ((( (no offset, no limit, joins with only language, no require)
+
+films with title like ace - 15 selects but total count is 74 ((( (no offset, no limit, joins with require)
+
+film relation is wrong((( does not matter if with require
+
+// recheck: !!!!
+  foreignKey: 'film_id',
+  otherKey: 'actor_id'
+
+// almost works, jiust need to recheck title(ac) and category(child)

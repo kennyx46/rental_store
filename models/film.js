@@ -14,7 +14,10 @@ var Film = sequelize.define('film', {
   },
   title: Sequelize.STRING,
   description: Sequelize.STRING,
-  release_year: Sequelize.STRING,
+  releaseYear: {
+    type: Sequelize.STRING,
+    field: 'release_year'
+  },
   language_id: {
     type: Sequelize.INTEGER,
     references: {
@@ -61,6 +64,7 @@ Film.belongsToMany(Category, {
 Film.belongsToMany(Actor, {
   through: 'film_actor',
   timestamps: false,
+  // recheck: !!!!
   foreignKey: 'film_id',
   otherKey: 'actor_id'
   // as: 'pendingTags',
