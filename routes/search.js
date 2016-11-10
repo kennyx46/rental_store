@@ -14,8 +14,18 @@ var SEARCH_KEYS = {
   LANGUAGE_NAME: 'language'
 }
 
+function ensureAuthenticated(req, res, next) {
+
+  console.log(req.session);
+
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.redirect('/auth/facebook');
+}
+
 /* search route. */
-router.get('/', function(req, res, next) {
+router.get('/', ensureAuthenticated, function(req, res, next) {
 
   var queryParams = buildQueryConfig(req);
 
@@ -123,7 +133,6 @@ function buildQueryConfig (req) {
 }
 
 function prepareData (films) {
-  // console.log(films);
   var mappedFilms = films.rows.map(function (film) {
   // var mappedFilms = films.map(function (film) {
     return {

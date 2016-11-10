@@ -4,6 +4,9 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var session = require('express-session');
+var passport = require('passport');
+var FacebookStrategy = require('passport-facebook');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
@@ -11,6 +14,40 @@ var categories = require('./routes/categories');
 var languages = require('./routes/languages');
 var actors = require('./routes/actors');
 var search = require('./routes/search');
+var auth = require('./routes/auth');
+
+
+
+passport.serializeUser(function (user, done) {
+  console.log('serializeUser ' + user);
+  done(null, user);
+});
+
+passport.deserializeUser(function (obj, done) {
+  console.log('deserializeUser ' + obj);
+  done(null, obj);
+});
+
+passport.use(new FacebookStrategy({
+  clientID: '1099490120170135',
+  clientSecret: 'f5ea7d005ff44e68050b59e986a796bd',
+  callbackURL: 'http://localhost:3000/auth/facebook/callback',
+  scope: ['email']
+}, function (accessToken, refreshToken, profile, done) {
+  // console.log(accessToken);
+  profile.accessToken = accessToken;
+  profile.refreshToken = refreshToken;
+  process.nextTick(function () {
+    return done(null, profile);
+  });
+}))
+
+function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.redirect('/auth/facebook');
+}
 
 var app = express();
 
@@ -25,20 +62,33 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
+app.use(session({ secret: 'secretsecretsecret', resave: true, saveUninitialized: true }))
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'node_modules')));
+app.use(express.static(path.join(__dirname, 'views')));
 
 // app.use('/', index);
+
+app.get('/logout', function(req, res){
+  req.logout();
+  res.redirect('/');
+});
+
 app.use('/users', users);
 app.use('/categories', categories);
 app.use('/languages', languages);
 app.use('/actors', actors);
 app.use('/search', search);
+app.use('/auth/facebook', auth);
 
 app.get('*', function (req, res) {
   res.render('index', {
     title: 'coolTitle',
-    bla: 'blablabla'
+    bla: 'blablabla',
+    user: req.user
   }); // load our public/index.html file
 });
 

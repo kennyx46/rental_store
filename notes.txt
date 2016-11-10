@@ -22,3 +22,9 @@ film relation is wrong((( does not matter if with require
   otherKey: 'actor_id'
 
 // almost works, jiust need to recheck title(ac) and category(child)
+
+
+
+
+
+https://vickev.com/#!/article/authentication-in-single-page-applications-node-js-passportjs-angularjs

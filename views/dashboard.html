@@ -1,0 +1,15 @@
+<div>
+  <p ng-bind="dashboard.currentUser.displayName"></p>
+  <table ng-table="dashboard.tableParams" show-filter="true" class="table table-bordered table-striped table-condensed">
+    <tr ng-repeat="film in $data">
+      <td title="'Title'" filter="{ title: 'text'}" sortable="'title'">{{film.title}}</td>
+      <td title="'Description'" filter="{ description: 'text'}" sortable="'description'">{{film.description}}</td>
+      <td title="'Length'" sortable="'length'">{{film.length}}</td>
+      <td title="'Rating'" sortable="'rating'">{{film.rating}}</td>
+      <td title="'ReleaseYear'" sortable="'releaseYear'">{{film.releaseYear}}</td>
+      <td title="'Category'" filter="{ category: 'text'}" sortable="'category'">{{film.category}}</td>
+      <td title="'Language'" filter="{ language: 'text'}" sortable="'language'">{{film.language}}</td>
+      <td title="'Actors'" filter="{ actor: 'text'}" sortable="'actors'">{{film.actors}}</td>
+    </tr>
+  </table>
+</div>

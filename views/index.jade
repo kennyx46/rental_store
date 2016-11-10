@@ -1,24 +1,6 @@
 extends layout
 
 block content
+
   div(ng-app='rentalStore')
-    div(ng-controller="DashboardCtrl as dashboard")
-      p(ng-bind="main.user")
-      table.table.table-bordered.table-striped.table-condensed(ng-table='dashboard.tableParams', show-filter='true')
-        tr(ng-repeat='film in $data')
-          td(title="'Title'", filter="{ title: 'text'}", sortable="'title'")
-            | {{film.title}}
-          td(title="'Description'", filter="{ description: 'text'}", sortable="'description'")
-            | {{film.description}}
-          td(title="'Length'", sortable="'length'")
-            | {{film.length}}
-          td(title="'Rating'", sortable="'rating'")
-            | {{film.rating}}
-          td(title="'ReleaseYear'", sortable="'releaseYear'")
-            | {{film.releaseYear}}
-          td(title="'Category'", filter="{ category: 'text'}", sortable="'category'")
-            | {{film.category}}
-          td(title="'Language'", filter="{ language: 'text'}", sortable="'language'")
-            | {{film.language}}
-          td(title="'Actors'", filter="{ actor: 'text'}", sortable="'actors'")
-            | {{film.actors}}
+    ng-view
