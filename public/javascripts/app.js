@@ -20,17 +20,17 @@ angular.module('rentalStore', ['ngRoute', 'ngTable'])
     .when("/login", {
       // controller: LoginCtrl
       templateUrl: "login.html",
-      resolve: {
-          'currentUser': function (UserService, $q) {
-            return UserService.authenticate().then(function (currentUser) {
-              if (currentUser.loggedOut) {
-                return $q.when();
-              } else {
-                $q.reject();
-              }
-            })
-          }
-        }
+      // resolve: {
+      //     'currentUser': function (UserService, $q) {
+      //       return UserService.authenticate().then(function (currentUser) {
+      //         if (currentUser.loggedOut) {
+      //           return $q.when();
+      //         } else {
+      //           $q.reject();
+      //         }
+      //       })
+      //     }
+      //   }
     })
     .otherwise("/")
   })
@@ -70,19 +70,19 @@ angular.module('rentalStore', ['ngRoute', 'ngTable'])
           var accountInfo = response.data;
 
           if (accountInfo.loggedOut) {
-            localStorage.isLoggedIn = false;
+            // localStorage.isLoggedIn = false;
             return $q.reject();
           } else {
-            localStorage.isLoggedIn = true;
+            // localStorage.isLoggedIn = true;
             currentUser = accountInfo;
             return currentUser;
           }
         })
       },
-      isLoggedIn: function () {
-        return localStorage.isLoggedIn;
-        // return currentUser;
-      }
+      // isLoggedIn: function () {
+      //   return localStorage.isLoggedIn;
+      //   // return currentUser;
+      // }
     }
   })
   .controller('DashboardCtrl', function ($http, NgTableParams, currentUser) {
@@ -98,11 +98,12 @@ angular.module('rentalStore', ['ngRoute', 'ngTable'])
       count: 50
     }, {
       counts: 50,
-      getData: function(params) {
+      getData: function (params) {
         var filterParams = params.filter();
         var searchParams = Object.assign({
           limit: params.count(),
-          offset: params.count() * (params.page() - 1)
+          offset: params.count() * (params.page() - 1),
+          accessToken: vm.currentUser.accessToken
         }, filterParams);
         // console.log(params.filter());
         // var limit = vm.tableParams.count();
@@ -114,7 +115,10 @@ angular.module('rentalStore', ['ngRoute', 'ngTable'])
           Object.keys(searchParams).reduce(function (acc, searchKey) {
             var searchValue = searchParams[searchKey];
 
-            return searchKey === 'limit' ||  searchKey === 'offset' || searchValue ?
+            return searchKey === 'limit' ||
+              searchKey === 'offset' ||
+              searchKey === 'accessToken' ||
+              searchValue ?
               acc + searchKey + "=" + searchValue + '&' :
               acc;
 
