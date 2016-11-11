@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "start": "nodemon ./bin/www"
+    "start1": "node ./bin/www"
   },
   "dependencies": {
     "angular": "^1.5.8",
