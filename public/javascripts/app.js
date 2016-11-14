@@ -18,39 +18,11 @@ angular.module('rentalStore', ['ngRoute', 'ngTable'])
 
     // .otherwise("/dashboard")
     .when("/login", {
-      // controller: LoginCtrl
       templateUrl: "login.html",
-      // resolve: {
-      //     'currentUser': function (UserService, $q) {
-      //       return UserService.authenticate().then(function (currentUser) {
-      //         if (currentUser.loggedOut) {
-      //           return $q.when();
-      //         } else {
-      //           $q.reject();
-      //         }
-      //       })
-      //     }
-      //   }
     })
     .otherwise("/")
   })
   .run(["$rootScope", "$location", function($rootScope, $location, UserService, $q) {
-    $rootScope.$on("$routeChangeStart", function(evt, to, from) {
-
-        // requires authorization?
-        // if (to.authorize === true) {
-        //     to.resolve = to.resolve || {};
-        //     if (!to.resolve.authorizationResolver) {
-        //         // inject resolver
-        //         to.resolve.authorizationResolver = ["authService", function(authService) {
-        //             return authService.authorize();
-        //         }];
-        //     }
-        // }
-        // console.log(to)
-        // console.log(UserService)
-    });
-
     $rootScope.$on("$routeChangeError", function(evt, to, from, error) {
       $location
         .path("/login")
@@ -61,7 +33,6 @@ angular.module('rentalStore', ['ngRoute', 'ngTable'])
 
     return {
       authenticate: function () {
-
         if (currentUser) {
           return $q.when(currentUser);
         }
@@ -70,22 +41,19 @@ angular.module('rentalStore', ['ngRoute', 'ngTable'])
           var accountInfo = response.data;
 
           if (accountInfo.loggedOut) {
-            // localStorage.isLoggedIn = false;
             return $q.reject();
           } else {
-            // localStorage.isLoggedIn = true;
             currentUser = accountInfo;
             return currentUser;
           }
         })
       },
-      // isLoggedIn: function () {
-      //   return localStorage.isLoggedIn;
-      //   // return currentUser;
-      // }
+      logout: function () {
+        currentUser = null;
+      }
     }
   })
-  .controller('DashboardCtrl', function ($http, NgTableParams, currentUser) {
+  .controller('DashboardCtrl', function ($http, NgTableParams, currentUser, $location, UserService) {
     var vm = this;
     var filmData = [];
 
@@ -93,7 +61,18 @@ angular.module('rentalStore', ['ngRoute', 'ngTable'])
 
     window.vm = vm;
 
-    // var data = [{name: "Moroni", age: 50}, {name: "Roroni", age: 46 }];
+    vm.logout = function () {
+      $http.get('/auth/facebook/logout').then(function () {
+
+        // console.log($location)
+        UserService.logout();
+        vm.currentUser = {};
+        $location.path("/login")
+      }, function () {
+        console.log('fail');
+      });
+    }
+
     vm.tableParams = new NgTableParams({
       count: 50
     }, {
@@ -105,37 +84,21 @@ angular.module('rentalStore', ['ngRoute', 'ngTable'])
           offset: params.count() * (params.page() - 1),
           accessToken: vm.currentUser.accessToken
         }, filterParams);
-        // console.log(params.filter());
-        // var limit = vm.tableParams.count();
-        // var offset = limit * (vm.tableParams.page() - 1);
-
-        // console.log(searchParams);
 
         return $http.get('/search?' +
           Object.keys(searchParams).reduce(function (acc, searchKey) {
             var searchValue = searchParams[searchKey];
 
-            return searchKey === 'limit' ||
-              searchKey === 'offset' ||
-              searchKey === 'accessToken' ||
-              searchValue ?
+            return (['limit', 'offset', 'accessToken'].indexOf(searchKey) !== -1 || searchValue) ?
               acc + searchKey + "=" + searchValue + '&' :
               acc;
 
-            // return acc + searchKey + "=" + searchParams[searchKey] + '&'
           }, '')
         ).then(function (resultFilms) {
-          // console.log(resultFilms);
-          // params.total(resultFilms.data.totalCount); // recal. page nav controls
+          var films;
           params.total(resultFilms.data.totalCount); // recal. page nav controls
 
-          // console.log(resultFilms.data.totalCount);
-          console.log(resultFilms.data.entries.length);
-          // params.total(10); // recal. page nav controls
-          // vm.films = films;
-
-          var films = resultFilms.data.entries;
-          // .slice((params.page() - 1) * params.count(), params.page() * params.count())
+          films = resultFilms.data.entries;
 
           films.forEach(function (film) {
             film.actors = film.actors.map(function (actor) {

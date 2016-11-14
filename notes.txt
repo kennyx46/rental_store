@@ -4,7 +4,7 @@
 4. lazy loading films???
 5. query not all attributes???
 6. lazy or not lazy pagination???
-
+7 only html not jade files
 
 
 
@@ -28,3 +28,6 @@ film relation is wrong((( does not matter if with require
 
 
 https://vickev.com/#!/article/authentication-in-single-page-applications-node-js-passportjs-angularjs
+
+
+8h!iPLLEtPlZk&NV

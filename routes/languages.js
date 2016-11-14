@@ -1,16 +1,18 @@
 var express = require('express');
 var router = express.Router();
 
+var ensureAuthenticated = require('../middlewares/auth').ensureAuthenticated;
+var ensureHasToken = require('../middlewares/auth').ensureHasToken;
+
 var Language = require('../models/language');
 
 /* GET languages listing. */
-router.get('/', function(req, res, next) {
+router.get('/', ensureAuthenticated, ensureHasToken, function(req, res, next) {
   Language.findAll().then(function (languages) {
-    console.log('got data')
-    res.json(languages);
 
+    res.json(languages);
   }, function (err) {
-    res.send('error(((');
+    res.json({ error: true });
   });
 });
 

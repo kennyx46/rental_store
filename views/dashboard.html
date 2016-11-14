@@ -1,15 +1,39 @@
 <div>
-  <p ng-bind="dashboard.currentUser.displayName"></p>
+  <nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">Rental Store</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li><a href="#"><span>{{dashboard.currentUser.displayName}}</span></a></li>
+        <li><a href="#"><span ng-if="dashboard.currentUser.emails[0]" ng-bind="dashboard.currentUser.emails[0].value"></span></a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a ng-click="dashboard.logout()">Logout</a></li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
   <table ng-table="dashboard.tableParams" show-filter="true" class="table table-bordered table-striped table-condensed">
     <tr ng-repeat="film in $data">
-      <td title="'Title'" filter="{ title: 'text'}" sortable="'title'">{{film.title}}</td>
-      <td title="'Description'" filter="{ description: 'text'}" sortable="'description'">{{film.description}}</td>
-      <td title="'Length'" sortable="'length'">{{film.length}}</td>
-      <td title="'Rating'" sortable="'rating'">{{film.rating}}</td>
-      <td title="'ReleaseYear'" sortable="'releaseYear'">{{film.releaseYear}}</td>
-      <td title="'Category'" filter="{ category: 'text'}" sortable="'category'">{{film.category}}</td>
-      <td title="'Language'" filter="{ language: 'text'}" sortable="'language'">{{film.language}}</td>
-      <td title="'Actors'" filter="{ actor: 'text'}" sortable="'actors'">{{film.actors}}</td>
+      <td title="'Title'" filter="{ title: 'text'}">{{film.title}}</td>
+      <td title="'Description'" filter="{ description: 'text'}">{{film.description}}</td>
+      <td title="'Length'">{{film.length}}</td>
+      <td title="'Rating'">{{film.rating}}</td>
+      <td title="'ReleaseYear'">{{film.releaseYear}}</td>
+      <td title="'Category'" filter="{ category: 'text'}">{{film.category}}</td>
+      <td title="'Language'" filter="{ language: 'text'}">{{film.language}}</td>
+      <td title="'Actors'" filter="{ actor: 'text'}">{{film.actors}}</td>
     </tr>
   </table>
 </div>

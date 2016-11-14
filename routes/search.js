@@ -1,6 +1,9 @@
 var express = require('express');
 var router = express.Router();
 
+var ensureAuthenticated = require('../middlewares/auth').ensureAuthenticated;
+var ensureHasToken = require('../middlewares/auth').ensureHasToken;
+
 var Category = require('../models/category');
 var Film = require('../models/film');
 var Actor = require('../models/actor');
@@ -14,34 +17,18 @@ var SEARCH_KEYS = {
   LANGUAGE_NAME: 'language'
 }
 
-function ensureAuthenticated(req, res, next) {
-
-  console.log(req.session);
-
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  res.redirect('/auth/facebook');
-}
-
 /* search route. */
-router.get('/', ensureAuthenticated, function(req, res, next) {
+router.get('/', ensureAuthenticated, ensureHasToken, function(req, res, next) {
 
   var queryParams = buildQueryConfig(req);
 
-  // Film.findAll(queryParams)
   Film.findAndCountAll(queryParams)
     .then(function (films) {
-
-      console.log(films.rows.length);
-      // console.log(films.length);
-
       var preparedFilms = prepareData(films);
 
       preparedFilms.offset = +req.query.offset;
       preparedFilms.limit = +req.query.limit;
 
-      console.log(Object.keys(preparedFilms))
     // return SearchLog.create({
     //   userId: 'currentUserId',
     //   searchType: searchType,
@@ -55,28 +42,20 @@ router.get('/', ensureAuthenticated, function(req, res, next) {
 
 function buildQueryConfig (req) {
   var fetchConfig = {
-
-    // recheck
     distinct: true,
-
-
     limit: +req.query.limit,
     offset: +req.query.offset,
-    // required: true,
     include: [
       {
         model: Language,
-        // required: true,
         attributes: ['name']
       },
       {
         model: Actor,
-        // required: true,
         attributes: ['firstName', 'lastName']
       },
       {
         model: Category,
-        // required: true,
         attributes: ['name']
       }
     ]
@@ -127,14 +106,11 @@ function buildQueryConfig (req) {
     }
   }
 
-  console.log(fetchConfig);
-
   return fetchConfig;
 }
 
 function prepareData (films) {
   var mappedFilms = films.rows.map(function (film) {
-  // var mappedFilms = films.map(function (film) {
     return {
       id: film.id,
       title: film.title,
@@ -153,8 +129,6 @@ function prepareData (films) {
     }
   })
 
-  // return films;
-  // return mappedFilms;
   return {
     totalCount: films.count,
     entries: mappedFilms
