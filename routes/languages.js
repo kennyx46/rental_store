@@ -7,7 +7,7 @@ var ensureHasToken = require('../middlewares/auth').ensureHasToken;
 var Language = require('../models/language');
 
 /* GET languages listing. */
-router.get('/', ensureAuthenticated, ensureHasToken, function(req, res, next) {
+router.get('/', ensureAuthenticated, function(req, res, next) {
   Language.findAll().then(function (languages) {
 
     res.json(languages);

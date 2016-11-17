@@ -53,13 +53,36 @@ angular.module('rentalStore', ['ngRoute', 'ngTable'])
       }
     }
   })
-  .controller('DashboardCtrl', function ($http, NgTableParams, currentUser, $location, UserService) {
+  .controller('DashboardCtrl', function ($http, $q, NgTableParams, currentUser, $location, UserService) {
     var vm = this;
     var filmData = [];
 
     vm.currentUser = currentUser || {};
+    vm.generalInfo = {};
+    vm.graph = {
+      graphCategories: [
+        { type: 'pie', label: 'Pie Chart' },
+        { type: 'bar', label: 'Bar Chart' }
+      ],
+      graphCategory: 'pie',
+      graphFields: [
+        { type: 'category', label: 'Category' },
+        { type: 'language', label: 'Language' }
+      ],
+      graphField: 'category'
+    };
 
-    window.vm = vm;
+    // window.vm = vm;
+    $q.all({
+      categories: $http.get('/categories'),
+      languages: $http.get('/languages')
+    }).then(function (result) {
+      console.log(result);
+      // vm.generalInfo = result;
+      vm.generalInfo.categories = result.categories.data;
+      vm.generalInfo.languages = result.languages.data;
+      // console.log(vm.generalInfo)
+    });
 
     vm.logout = function () {
       $http.get('/auth/facebook/logout').then(function () {
@@ -71,6 +94,47 @@ angular.module('rentalStore', ['ngRoute', 'ngTable'])
       }, function () {
         console.log('fail');
       });
+    }
+
+    vm.updateGraph = function () {
+      var graphField = vm.graph.graphField === 'category' ?
+        'categories': 'languages';
+
+      var fields = vm.generalInfo[graphField].map(function (field) {
+        return field.name;
+      });
+
+      var groupedFilms = _.groupBy(vm.currentDisplayedFilms, vm.graph.graphField);
+
+      var data = [{
+        // values: [19, 26, 55],
+        // labels: ['Residential', 'Non-Residential', 'Utility'],
+        values: fields.map(function (field) {
+          if (groupedFilms[field]) {
+            return groupedFilms[field].length * 100 / vm.filmsCount
+          } else {
+            return 0;
+          }
+        }),
+        labels: fields,
+        type: vm.graph.graphCategory
+      }];
+
+      data[0].x = data[0].labels;
+      data[0].y = fields.map(function (field) {
+        if (groupedFilms[field]) {
+          return groupedFilms[field].length;
+        } else {
+          return 0;
+        }
+      });
+
+      var layout = {
+        height: 400,
+        width: 800
+      };
+
+      Plotly.newPlot('graphWrapper', data, layout);
     }
 
     vm.tableParams = new NgTableParams({
@@ -106,7 +170,10 @@ angular.module('rentalStore', ['ngRoute', 'ngTable'])
             }).join(", ");
           });
 
-          // console.log(films);
+          vm.currentDisplayedFilms = films;
+          vm.filmsCount = resultFilms.data.totalCount;
+
+          vm.updateGraph();
 
           return films;
         })

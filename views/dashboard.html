@@ -36,4 +36,23 @@
       <td title="'Actors'" filter="{ actor: 'text'}">{{film.actors}}</td>
     </tr>
   </table>
+  <div class="form-group">
+    <label class="control-label">Graph type:</label>
+    <div>
+      <select class="form-control" ng-model="dashboard.graph.graphCategory" ng-change="dashboard.updateGraph()">
+        <option ng-repeat="category in dashboard.graph.graphCategories" value="{{category.type}}">{{category.label}}</option>
+      </select>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="control-label">Graph Fields:</label>
+    <div>
+      <select class="form-control" ng-model="dashboard.graph.graphField" ng-change="dashboard.updateGraph()">
+    <option ng-repeat="field in dashboard.graph.graphFields" value="{{field.type}}">
+      {{field.label}}
+    </option>
+  </select>
+    </div>
+  </div>
+  <div id="graphWrapper"></div>
 </div>
